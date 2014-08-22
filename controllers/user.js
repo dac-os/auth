@@ -30,6 +30,43 @@ router.use(function (request, response, next) {
   });
 });
 
+/**
+ * @api {post} /users Creates a new user.
+ * @apiName createUser
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission changeUser
+ * @apiDescription
+ * When creating a new user account the user must send the profile, the user academic registry and the password. The
+ * academic registry is used for naming and must be unique in the system. If a existing academic registry is sent to
+ * this method, a 409 error will be raised. And if no academic registry, or password or profile where sent, a 400 error
+ * will be raised. Before saving, the user password will be hashed with sha1 together with a password salt and digested
+ * into hex.
+ *
+ * @apiParam {String} profile User's profile name.
+ * @apiParam {String} academicRegistry User academic registry.
+ * @apiParam {String} password User password..
+ *
+ * @apiErrorExample
+ * HTTP/1.1 400 Bad Request
+ * {
+ *   "academicRegistry": "required",
+ *   "password": "required",
+ *   "profile": "required"
+ * }
+ *
+ * @apiErrorExample
+ * HTTP/1.1 403 Forbidden
+ * {}
+ *
+ * @apiErrorExample
+ * HTTP/1.1 409 Conflict
+ * {}
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 201 Created
+ * {}
+ */
 router
 .route('/users')
 .post(auth.can('changeUser'))
@@ -55,9 +92,46 @@ router
   });
 });
 
+/**
+ * @api {get} /users/me Get user information.
+ * @apiName getUser
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission none
+ * @apiDescription
+ * This method returns a single user details, the user academic registry must be passed in the uri to identify th
+ * requested user. If no user with the requested academic registry was found, a 404 error will be raised.
+ *
+ * @apiSuccess {String} academicRegistry User identifier.
+ * @apiSuccess {String} profile User profile.
+ * @apiSuccess {date} createdAt Profile creation date.
+ * @apiSuccess {date} updatedAt Profile last update date.
+ * @apiSuccess (profile) {String} slug Profile identifier.
+ * @apiSuccess (profile) {String} name Profile name.
+ * @apiSuccess (profile) {[String]} permissions List of profile permissions.
+ * @apiSuccess (profile) {date} createdAt Profile creation date.
+ * @apiSuccess (profile) {date} updatedAt Profile last update date.
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 200 OK
+ * {
+ *   "academicRegistry": "111111",
+ *   "profile": {
+ *     "slug": "teacher",
+ *     "name": "teacher",
+ *     "permissions": [
+ *       "changeGrades"
+ *     ],
+ *     "createdAt": "2014-07-01T12:22:25.058Z",
+ *     "updatedAt": "2014-07-01T12:22:25.058Z"
+ *   },
+ *   "createdAt": "2014-07-01T12:22:25.058Z",
+ *   "updatedAt": "2014-07-01T12:22:25.058Z"
+ * }
+ */
 router
 .route('/users/me')
-.get(function validateSession(request, response) {
+.get(function getUser(request, response) {
   'use strict';
 
   var session;
@@ -68,6 +142,42 @@ router
   return response.status(200).send(session);
 });
 
+/**
+ * @api {put} /users/me Updates user information.
+ * @apiName updateUser
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission changeUser
+ * @apiDescription
+ * When updating a user account the user must send the profile, the user academic registry and the password. If a
+ * existing academic registry which is not the original user academic registry is sent to this method, a 409 error will
+ * be raised. And if no academic registry, or password or profile is sent, a 400 error will be raised. If no user with
+ * the requested academic registry was found, a 404 error will be raised.
+ *
+ * @apiParam {String} profile User's profile name.
+ * @apiParam {String} academicRegistry User academic registry.
+ * @apiParam {String} password User password..
+ *
+ * @apiErrorExample
+ * HTTP/1.1 400 Bad Request
+ * {
+ *   "academicRegistry": "required",
+ *   "password": "required",
+ *   "profile": "required"
+ * }
+ *
+ * @apiErrorExample
+ * HTTP/1.1 403 Forbidden
+ * {}
+ *
+ * @apiErrorExample
+ * HTTP/1.1 409 Conflict
+ * {}
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 200 Ok
+ * {}
+ */
 router
 .route('/users/me')
 .put(auth.can('changeUser'))
@@ -87,6 +197,30 @@ router
   });
 });
 
+/**
+ * @api {post} /users/me/session Creates a new session.
+ * @apiName createSession
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission changeUser
+ * @apiDescription
+ * To create a new user session, the user must send his academic registry and password using the http basic header
+ * "authorization", in this header the user must put the word "basic " followed by the academic registry and password
+ * separated with ":" and encoded in base 64. If the credentials are valid, a access token will be generated.
+ * Using the user internal id, the current timestamp and a token salt, this values will be hashed with sha1 and digested
+ * into hex to generate a access token. This token can be used for one hour after created. To use the access token, for
+ * every request, the user must send the access token in the "csrf-token" header.
+ *
+ * @apiErrorExample
+ * HTTP/1.1 401 Unauthorized
+ * {}
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 200 Ok
+ * {
+ *   "token": "fb952b1957b6a96debbdf418304226cd356c5499"
+ * }
+ */
 router
 .route('/users/me/session')
 .post(function createSession(request, response, next) {
