@@ -154,7 +154,7 @@ router
 });
 
 /**
- * @api {post} /profiles Updates profile information.
+ * @api {put} /profiles/:profile Updates profile information.
  * @apiName updateProfile
  * @apiVersion 1.0.0
  * @apiGroup profile
@@ -210,7 +210,7 @@ router
 });
 
 /**
- * @api {post} /profiles Removes profile.
+ * @api {delete} /profiles/:profile Removes profile.
  * @apiName removeProfile
  * @apiVersion 1.0.0
  * @apiGroup profile
