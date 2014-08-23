@@ -1,5 +1,6 @@
 {
   "MONGOHQ_URL"    : "mongodb://localhost/dacos-auth",
+  "REDISCLOUD_URL" : null,
   "PAGE_SIZE"      : 20,
   "PASSWORD_SALT"  : "ekPhz_}/^^Q13HIHo,_tU1EPItV~ 2-A0d,,W00k0wpT.yHIy1VYtc@p3B-{pMyv",
   "PORT"           : 8085,
