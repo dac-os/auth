@@ -5,12 +5,12 @@ express = require('express');
 mongoose = require('mongoose');
 nconf = require('nconf');
 bodyParser = require('body-parser');
-auth = require('./auth');
 
 nconf.argv();
 nconf.env();
 nconf.defaults(require('./config'));
 
+auth = require('./auth');
 mongoose.connect(nconf.get('MONGOHQ_URL'));
 
 app = express();
