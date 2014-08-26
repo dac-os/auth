@@ -36,7 +36,6 @@
     "dacos-courses-driver": "dac-os/courses-driver.git",
     "dacos-enrollment-driver": "dac-os/enrollment-driver.git",
     "dacos-history-driver": "dac-os/history-driver.git",
-    "dacos-status-driver": "dac-os/status-driver.git",
     "express": "^4.6.1",
     "forky": "^0.1.2",
     "mongoose": "^3.8.13",
