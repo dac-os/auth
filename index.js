@@ -55,6 +55,7 @@ app.use(function handleErrors(error, request, response, next) {
   response.status(500).end();
   return process.exit();
 });
+
 app.get('/', function pingSuccess(request, response) {
   'use strict';
 
