@@ -18,18 +18,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({'extended' : true}));
 app.use(auth.session());
 app.use(function (request, response, next) {
-    'use strict';
+  'use strict';
 
-    response.header('Content-Type', 'application/json');
-    response.header('Content-Encoding', 'UTF-8');
-    response.header('Content-Language', 'en');
-    response.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-    response.header('Pragma', 'no-cache');
-    response.header('Expires', '0');
-    response.header('Access-Control-Allow-Origin', '*');
-    response.header('Access-Control-Allow-Methods', request.get('Access-Control-Request-Method'));
-    response.header('Access-Control-Allow-Headers', request.get('Access-Control-Request-Headers'));
-    next();
+  response.header('Content-Type', 'application/json');
+  response.header('Content-Encoding', 'UTF-8');
+  response.header('Content-Language', 'en');
+  response.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  response.header('Pragma', 'no-cache');
+  response.header('Expires', '0');
+  response.header('Access-Control-Allow-Origin', '*');
+  response.header('Access-Control-Allow-Methods', request.get('Access-Control-Request-Method'));
+  response.header('Access-Control-Allow-Headers', request.get('Access-Control-Request-Headers'));
+  next();
 });
 app.use(require('./controllers/user'));
 app.use(require('./controllers/profile'));
@@ -57,7 +57,7 @@ app.use(function handleErrors(error, request, response, next) {
 });
 app.get('/', function pingSuccess(request, response) {
   'use strict';
-  
+
   response.status(200).send({});
 });
 
