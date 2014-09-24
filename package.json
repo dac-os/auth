@@ -8,7 +8,7 @@
     "predocs": "apidoc -i controllers/ -o docs/",
     "docs": "apidoc-markdown -p docs/ -o README.md",
     "postdocs": "rm -R docs",
-    "start": "node cluster.js"
+    "start": "cluster index.js"
   },
   "repository": {
     "type": "git",
@@ -33,12 +33,12 @@
     "async": "^0.9.0",
     "basic-auth": "^1.0.0",
     "body-parser": "^1.4.3",
+    "cluster-start": "^0.1.4",
     "dacos-calendar-driver": "dac-os/calendar-driver.git",
     "dacos-courses-driver": "dac-os/courses-driver.git",
     "dacos-enrollment-driver": "dac-os/enrollment-driver.git",
     "dacos-history-driver": "dac-os/history-driver.git",
     "express": "^4.6.1",
-    "forky": "^0.1.2",
     "mongoose": "^3.8.13",
     "mongoose-json-select": "^0.2.1",
     "nconf": "^0.6.9",
