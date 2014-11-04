@@ -1,16 +1,16 @@
-var VError, mongoose, jsonSelect, nconf, Schema, schema;
+var VError, mongoose, jsonSelect, nconf, Schema, async, schema;
 
 VError = require('verror');
 mongoose = require('mongoose');
 jsonSelect = require('mongoose-json-select');
 nconf = require('nconf');
+async = require('async');
 Schema = mongoose.Schema;
 
 schema = new Schema({
   'profile'          : {
     'type'     : Schema.ObjectId,
-    'ref'      : 'Profile',
-    'required' : true
+    'ref'      : 'Profile'
   },
   'academicRegistry' : {
     'type'   : String,

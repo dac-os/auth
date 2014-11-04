@@ -104,20 +104,6 @@ describe('user controller', function () {
       request.end(done);
     });
 
-    it('should raise error without profile', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'academicRegistry' : '111113'});
-      request.send({'password' : '1234'});
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('profile').be.equal('required');
-      });
-      request.end(done);
-    });
-
     it('should raise error without academicRegistry and password', function (done) {
       var request;
       request = supertest(app);
@@ -127,48 +113,6 @@ describe('user controller', function () {
       request.expect(400);
       request.expect(function (response) {
         response.body.should.have.property('academicRegistry').be.equal('required');
-        response.body.should.have.property('password').be.equal('required');
-      });
-      request.end(done);
-    });
-
-    it('should raise error without academicRegistry and profile', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'password' : '1234'});
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('academicRegistry').be.equal('required');
-        response.body.should.have.property('profile').be.equal('required');
-      });
-      request.end(done);
-    });
-
-    it('should raise error without password and profile', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'academicRegistry' : '111113'});
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('profile').be.equal('required');
-        response.body.should.have.property('password').be.equal('required');
-      });
-      request.end(done);
-    });
-
-    it('should raise error without academicRegistry, password and profile', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('academicRegistry').be.equal('required');
-        response.body.should.have.property('profile').be.equal('required');
         response.body.should.have.property('password').be.equal('required');
       });
       request.end(done);
