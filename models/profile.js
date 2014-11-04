@@ -51,7 +51,7 @@ schema.pre('save', function setProfileUpdatedAt(next) {
   next();
 });
 
-schema.pre('remove', function (next) {
+schema.pre('remove', function updateCascadeUsers(next) {
   'use strict';
 
   async.waterfall([function (next) {
@@ -64,8 +64,8 @@ schema.pre('remove', function (next) {
     async.each(users, function (user, next) {
       user.profile = null;
       user.save(next);
-    }, next);
-  }], next);
+    }.bind(this), next);
+  }.bind(this)], next);
 });
 
 module.exports = mongoose.model('Profile', schema);
