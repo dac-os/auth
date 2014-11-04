@@ -78,7 +78,13 @@ router
   user = new User({
     'academicRegistry' : request.param('academicRegistry'),
     'password'         : request.param('password') ? password : null,
-    'profile'          : request.profile ? request.profile._id : null
+    'profile'          : request.profile ? request.profile._id : null,
+    'name'             : request.param('name'),
+    'gender'           : request.param('gender'),
+    'email'            : request.param('email'),
+    'phones'           : request.param('phones'),
+    'addresses'        : request.param('addresses'),
+    'birthDate'        : request.param('birthDate')
   });
   async.series([user.save.bind(user), function (done) {
     user.populate('profile');
@@ -188,6 +194,12 @@ router
   password = crypto.createHash('sha1').update(request.param('password') + nconf.get('PASSWORD_SALT')).digest('hex');
   user = request.session;
   user.password = request.param('password') ? password : user.password;
+  user.name = request.param('name');
+  user.gender = request.param('gender');
+  user.email = request.param('email');
+  user.phones = request.param('phones');
+  user.addresses = request.param('addresses');
+  user.birthDate = request.param('birthDate');
   return user.save(function updatedUser(error) {
     if (error) {
       error = new VError(error, 'error updating user: "$s"', request.params.user);

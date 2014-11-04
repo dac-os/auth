@@ -9,17 +9,67 @@ Schema = mongoose.Schema;
 
 schema = new Schema({
   'profile'          : {
-    'type'     : Schema.ObjectId,
-    'ref'      : 'Profile'
+    'type' : Schema.ObjectId,
+    'ref'  : 'Profile'
   },
   'academicRegistry' : {
-    'type'   : String,
-    'unique' : true,
+    'type'     : String,
+    'unique'   : true,
     'required' : true
   },
   'password'         : {
-    'type' : String,
+    'type'     : String,
     'required' : true
+  },
+  'name'             : {
+    'type' : String
+  },
+  'gender'           : {
+    'type' : String
+  },
+  'email'            : {
+    'type' : String
+  },
+  'phones'           : [
+    {
+      'type'     : Number,
+      'required' : true
+    }
+  ],
+  'addresses'        : [
+    {
+      'state'        : {
+        'type'     : String,
+        'required' : true
+      },
+      'city'         : {
+        'type'     : String,
+        'required' : true
+      },
+      'zipCode'      : {
+        'type'     : String,
+        'required' : true
+      },
+      'neighborhood' : {
+        'type'     : String,
+        'required' : false
+      },
+      'street'       : {
+        'type'     : String,
+        'required' : true
+      },
+      'number'       : {
+        'type'     : String,
+        'required' : true
+      },
+      'complement'   : {
+        'type'     : String,
+        'required' : false
+      }
+    }
+  ],
+  'birthDate'        : {
+    'type' : Date
   },
   'createdAt'        : {
     'type'    : Date,
@@ -41,6 +91,12 @@ schema.plugin(jsonSelect, {
   'profile'          : 1,
   'academicRegistry' : 1,
   'password'         : 0,
+  'name'             : 1,
+  'gender'           : 1,
+  'email'            : 1,
+  'phones'           : 1,
+  'addresses'        : 1,
+  'birthDate'        : 1,
   'createdAt'        : 1,
   'updatedAt'        : 1
 });
