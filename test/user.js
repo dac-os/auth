@@ -272,7 +272,7 @@ describe('user controller', function () {
         var request;
         request = supertest(app);
         request = request.post('/users/me/session');
-        request.set('authorization', 'Basic ' + new Buffer('aaa:1234').toString('base64'));
+        request.set('authorization', 'Basic ' + new Buffer(':1234').toString('base64'));
         request.expect(401);
         request.end(done);
       });
@@ -283,7 +283,7 @@ describe('user controller', function () {
         var request;
         request = supertest(app);
         request = request.post('/users/me/session');
-        request.set('authorization', 'Basic ' + new Buffer('111113:aaa').toString('base64'));
+        request.set('authorization', 'Basic ' + new Buffer('111113:').toString('base64'));
         request.expect(401);
         request.end(done);
       });
@@ -294,7 +294,6 @@ describe('user controller', function () {
         var request;
         request = supertest(app);
         request = request.post('/users/me/session');
-        request.set('authorization', 'Basic ' + new Buffer('aaa:aaa').toString('base64'));
         request.expect(401);
         request.end(done);
       });

@@ -240,8 +240,8 @@ router
 
   var credentials, academicRegistry, password, query;
   credentials = basicAuth(request);
-  academicRegistry = credentials.name;
-  password = crypto.createHash('sha1').update(credentials.pass + nconf.get('PASSWORD_SALT')).digest('hex');
+  academicRegistry = credentials ? credentials.name : '';
+  password = crypto.createHash('sha1').update((credentials ? credentials.pass : '') + nconf.get('PASSWORD_SALT')).digest('hex');
   query = User.findOne();
   query.where('academicRegistry').equals(academicRegistry);
   query.where('password').equals(password);
