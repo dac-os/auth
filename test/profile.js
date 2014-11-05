@@ -306,6 +306,27 @@ describe('profile controller', function () {
         request.expect(200);
         request.end(done);
       });
+
+      after(function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/profiles/change-profile-profile');
+        request.expect(404);
+        request.end(done);
+      });
+
+      after(function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/profiles/test-profile-2');
+        request.expect(200);
+        request.expect(function (response) {
+          response.body.should.have.property('slug').be.equal('test-profile-2');
+          response.body.should.have.property('name').be.equal('test profile 2');
+          response.body.should.have.property('permissions');
+        });
+        request.end(done);
+      });
     });
 
     describe('with name taken', function () {
@@ -409,6 +430,14 @@ describe('profile controller', function () {
         request = request.del('/profiles/change-profile-profile');
         request.set('csrf-token', auth.token(admin));
         request.expect(204);
+        request.end(done);
+      });
+
+      after(function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/profiles/change-profile-profile');
+        request.expect(404);
         request.end(done);
       });
     });
