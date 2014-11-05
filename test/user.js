@@ -53,81 +53,93 @@ describe('user controller', function () {
       otherUser.save(done);
     });
 
-    it('should raise error without token', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.send({'academicRegistry' : '111113'});
-      request.send({'password' : '1234'});
-      request.send({'profile' : 'other-profile'});
-      request.expect(403);
-      request.end(done);
-    });
-
-    it('should raise error without changeUser permission', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(otherUser));
-      request.send({'academicRegistry' : '111113'});
-      request.send({'password' : '1234'});
-      request.send({'profile' : 'other-profile'});
-      request.expect(403);
-      request.end(done);
-    });
-
-    it('should raise error without academicRegistry', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'password' : '1234'});
-      request.send({'profile' : 'other-profile'});
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('academicRegistry').be.equal('required');
+    describe('without token', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users');
+        request.send({'academicRegistry' : '111113'});
+        request.send({'password' : '1234'});
+        request.send({'profile' : 'other-profile'});
+        request.expect(403);
+        request.end(done);
       });
-      request.end(done);
     });
 
-    it('should raise error without password', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'academicRegistry' : '111113'});
-      request.send({'profile' : 'other-profile'});
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('password').be.equal('required');
+    describe('without changeUser permission', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users');
+        request.set('csrf-token', auth.token(otherUser));
+        request.send({'academicRegistry' : '111113'});
+        request.send({'password' : '1234'});
+        request.send({'profile' : 'other-profile'});
+        request.expect(403);
+        request.end(done);
       });
-      request.end(done);
     });
 
-    it('should raise error without academicRegistry and password', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'profile' : 'other-profile'});
-      request.expect(400);
-      request.expect(function (response) {
-        response.body.should.have.property('academicRegistry').be.equal('required');
-        response.body.should.have.property('password').be.equal('required');
+    describe('without academicRegistry', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users');
+        request.set('csrf-token', auth.token(admin));
+        request.send({'password' : '1234'});
+        request.send({'profile' : 'other-profile'});
+        request.expect(400);
+        request.expect(function (response) {
+          response.body.should.have.property('academicRegistry').be.equal('required');
+        });
+        request.end(done);
       });
-      request.end(done);
     });
 
-    it('should create', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'academicRegistry' : '111113'});
-      request.send({'password' : '1234'});
-      request.send({'profile' : 'other-profile'});
-      request.expect(201);
-      request.end(done);
+    describe('without password', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users');
+        request.set('csrf-token', auth.token(admin));
+        request.send({'academicRegistry' : '111113'});
+        request.send({'profile' : 'other-profile'});
+        request.expect(400);
+        request.expect(function (response) {
+          response.body.should.have.property('password').be.equal('required');
+        });
+        request.end(done);
+      });
+    });
+
+    describe('without academicRegistry and password', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users');
+        request.set('csrf-token', auth.token(admin));
+        request.send({'profile' : 'other-profile'});
+        request.expect(400);
+        request.expect(function (response) {
+          response.body.should.have.property('academicRegistry').be.equal('required');
+          response.body.should.have.property('password').be.equal('required');
+        });
+        request.end(done);
+      });
+    });
+
+    describe('with valid credentials, name and password', function () {
+      it('should create', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users');
+        request.set('csrf-token', auth.token(admin));
+        request.send({'academicRegistry' : '111113'});
+        request.send({'password' : '1234'});
+        request.send({'profile' : 'other-profile'});
+        request.expect(201);
+        request.end(done);
+      });
     });
 
     describe('with academicRegistry taken', function () {
@@ -168,26 +180,30 @@ describe('user controller', function () {
       otherUser.save(done);
     });
 
-    it('should raise error without token', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.get('/users/me');
-      request.expect(403);
-      request.end(done);
+    describe('without token', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/users/me');
+        request.expect(403);
+        request.end(done);
+      });
     });
 
-    it('should show', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.get('/users/me');
-      request.set('csrf-token', auth.token(otherUser));
-      request.expect(200);
-      request.expect(function (response) {
-        response.body.should.have.property('academicRegistry').be.equal('111112');
-        response.body.should.have.property('profile').with.property('name').be.equal('other profile');
-        response.body.should.have.property('profile').with.property('slug').be.equal('other-profile');
+    describe('with valid credentials', function () {
+      it('should show', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/users/me');
+        request.set('csrf-token', auth.token(otherUser));
+        request.expect(200);
+        request.expect(function (response) {
+          response.body.should.have.property('academicRegistry').be.equal('111112');
+          response.body.should.have.property('profile').with.property('name').be.equal('other profile');
+          response.body.should.have.property('profile').with.property('slug').be.equal('other-profile');
+        });
+        request.end(done);
       });
-      request.end(done);
     });
   });
 
@@ -203,23 +219,27 @@ describe('user controller', function () {
       admin.save(done);
     });
 
-    it('should raise error without token', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.put('/users/me');
-      request.send({'password' : '1234'});
-      request.expect(403);
-      request.end(done);
+    describe('without token', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.put('/users/me');
+        request.send({'password' : '1234'});
+        request.expect(403);
+        request.end(done);
+      });
     });
 
-    it('should update', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.put('/users/me');
-      request.set('csrf-token', auth.token(admin));
-      request.send({'password' : '1234'});
-      request.expect(200);
-      request.end(done);
+    describe('with valid credentials', function () {
+      it('should update', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.put('/users/me');
+        request.set('csrf-token', auth.token(admin));
+        request.send({'password' : '1234'});
+        request.expect(200);
+        request.end(done);
+      });
     });
   });
 
@@ -247,29 +267,51 @@ describe('user controller', function () {
       request.end(done);
     });
 
-    it('should raise error without academicRegistry', function (done) {
-      done();
-    });
-
-    it('should raise error without password', function (done) {
-      done();
-    });
-
-    it('should raise error without academicRegistry and password', function (done) {
-      done();
-    });
-
-    it('should login', function (done) {
-      var request;
-      request = supertest(app);
-      request = request.post('/users/me/session');
-      request.set('authorization', 'Basic ' + new Buffer('111113:1234').toString('base64'));
-      request.send({'password' : '1234'});
-      request.expect(201);
-      request.expect(function (response) {
-        response.body.should.have.property('token');
+    describe('without academicRegistry', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users/me/session');
+        request.set('authorization', 'Basic ' + new Buffer('aaa:1234').toString('base64'));
+        request.expect(401);
+        request.end(done);
       });
-      request.end(done);
+    });
+
+    describe('without password', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users/me/session');
+        request.set('authorization', 'Basic ' + new Buffer('111113:aaa').toString('base64'));
+        request.expect(401);
+        request.end(done);
+      });
+    });
+
+    describe('without academicRegistry and password', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users/me/session');
+        request.set('authorization', 'Basic ' + new Buffer('aaa:aaa').toString('base64'));
+        request.expect(401);
+        request.end(done);
+      });
+    });
+
+    describe('with valid academicRegistry and password', function () {
+      it('should login', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.post('/users/me/session');
+        request.set('authorization', 'Basic ' + new Buffer('111113:1234').toString('base64'));
+        request.expect(201);
+        request.expect(function (response) {
+          response.body.should.have.property('token');
+        });
+        request.end(done);
+      });
     });
   });
 });
