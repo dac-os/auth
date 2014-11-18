@@ -207,6 +207,49 @@ describe('user controller', function () {
     });
   });
 
+  describe('list', function () {
+    before(User.remove.bind(User));
+
+    before(function (done) {
+      otherUser = new User({
+        'academicRegistry' : '111112',
+        'password'         : '1234',
+        'profile'          : otherProfile._id
+      });
+      otherUser.save(done);
+    });
+
+    describe('with one in database', function () {
+      it('should list 1 in first page', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/users');
+        request.expect(200);
+        request.expect(function (response) {
+          response.body.should.be.instanceOf(Array).with.lengthOf(1);
+          response.body.every(function (profile) {
+            profile.should.have.property('academicRegistry');
+            profile.should.have.property('profile');
+          });
+        });
+        request.end(done);
+      });
+
+      it('should return empty in second page', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/users');
+        request.send({'page' : 1});
+        request.expect(200);
+        request.expect(function (response) {
+          response.body.should.be.instanceOf(Array).with.lengthOf(0);
+        });
+        request.end(done);
+      });
+    });
+
+  });
+
   describe('update', function () {
     before(User.remove.bind(User));
 

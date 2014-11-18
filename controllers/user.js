@@ -98,6 +98,52 @@ router
   });
 });
 
+
+/**
+ * @api {get} /users List all system users.
+ * @apiName listUsers
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission none
+ * @apiDescription
+ * This method returns an array with all users in the database. The data is returned in pages of length 20. If no
+ * page is passed, the system will assume the requested page is page 0, otherwise the desired page must be sent.
+ *
+ * @apiParam {[Number=0]} page Requested page.
+ *
+ * @apiSuccess (user) {String} academicRegistry User academic registry.
+ * @apiSuccess (user) {Date} createdAt User creation date.
+ * @apiSuccess (user) {Date} updatedAt User last update date.
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 200 OK
+ * [{
+ *   "academicRegistry": 111112,
+     "profile"  : ??????,
+ *   "createdAt": "2014-07-01T12:22:25.058Z",
+ *   "updatedAt": "2014-07-01T12:22:25.058Z"
+ * }]
+ */
+router
+.route('/users')
+.get(function listUser(request, response, next) {
+  'use strict';
+
+  var pageSize, page, query;
+  pageSize = nconf.get('PAGE_SIZE');
+  page = request.param('page', 0) * pageSize;
+  query = User.find();
+  query.skip(page);
+  query.limit(pageSize);
+  return query.exec(function listedUser(error, users) {
+    if (error) {
+      error = new VError(error, 'error finding users');
+      return next(error);
+    }
+    return response.status(200).send(users);
+  });
+});
+
 /**
  * @api {get} /users/me Get user information.
  * @apiName getUser
