@@ -243,7 +243,6 @@ router
   academicRegistry = credentials ? credentials.name : '';
   password = crypto.createHash('sha1').update((credentials ? credentials.pass : '') + nconf.get('PASSWORD_SALT')).digest('hex');
   query = User.findOne();
-  console.log(password);
   query.where('academicRegistry').equals(academicRegistry);
   query.where('password').equals(password);
   query.exec(function (error, user) {
