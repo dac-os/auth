@@ -118,12 +118,21 @@ router
  * @apiSuccessExample
  * HTTP/1.1 200 OK
  * [{
- *   "academicRegistry": 111112,
-     "profile"  : ??????,
+ *   "academicRegistry": "111111",
+ *   "profile": {
+ *     "slug": "teacher",
+ *     "name": "teacher",
+ *     "permissions": [
+ *       "changeGrades"
+ *     ],
+ *     "createdAt": "2014-07-01T12:22:25.058Z",
+ *     "updatedAt": "2014-07-01T12:22:25.058Z"
+ *   },
  *   "createdAt": "2014-07-01T12:22:25.058Z",
  *   "updatedAt": "2014-07-01T12:22:25.058Z"
  * }]
  */
+
 router
 .route('/users')
 .get(function listUser(request, response, next) {
@@ -300,6 +309,71 @@ router
       return response.status(401).end();
     }
     return response.status(201).send({'token' : auth.token(user)});
+  });
+});
+
+ /**
+ * @api {get} /users/:user Get user information.
+ * @apiName getUser
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission none
+ * @apiDescription
+ * This method returns a single user details, the user academicRegistry must be passed in the uri to identify the requested
+ * user. If no user with the requested academicRegistry was found, a 404 error will be raised.
+ *
+ * @apiSuccess (user) {String} academicRegistry User academic registry.
+ * @apiSuccess (user) {Date} createdAt User creation date.
+ * @apiSuccess (user) {Date} updatedAt User last update date.
+ *
+ * @apiErrorExample
+ * HTTP/1.1 404 Not Found
+ * {}
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 200 OK
+ * {
+ *   "academicRegistry": "111111",
+ *   "profile": {
+ *     "slug": "teacher",
+ *     "name": "teacher",
+ *     "permissions": [
+ *       "changeGrades"
+ *     ],
+ *     "createdAt": "2014-07-01T12:22:25.058Z",
+ *     "updatedAt": "2014-07-01T12:22:25.058Z"
+ *   },
+ *   "createdAt": "2014-07-01T12:22:25.058Z",
+ *   "updatedAt": "2014-07-01T12:22:25.058Z"
+ * }
+ */
+router
+.route('/users/:user')
+.get(function getUser(request, response, next) {
+  'use strict';
+
+  var user, query;
+  user = request.user;
+  return response.status(200).send(user);
+});
+
+router.param('user', function findUser(request, response, next, id) {
+  'use strict';
+
+  var query;
+  query = User.findOne();
+  query.where('academicRegistry').equals(isNaN(id) ? 0 : id);
+  query.populate('profile');
+  query.exec(function foundUser(error, user) {
+    if (error) {
+      error = new VError(error, 'error finding user: "$s"', user);
+      return next(error);
+    }
+    if (!user) {
+      return response.status(404).end();
+    }
+    request.user = user;
+    return next();
   });
 });
 
