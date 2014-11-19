@@ -5,6 +5,7 @@ mongoose = require('mongoose');
 jsonSelect = require('mongoose-json-select');
 nconf = require('nconf');
 async = require('async');
+damm = require('damm');
 Schema = mongoose.Schema;
 
 schema = new Schema({
@@ -14,8 +15,7 @@ schema = new Schema({
   },
   'academicRegistry' : {
     'type'     : String,
-    'unique'   : true,
-    'required' : true
+    'unique'   : true
   },
   'password'         : {
     'type'     : String,
@@ -106,6 +106,34 @@ schema.pre('save', function setUserUpdatedAt(next) {
 
   this.updatedAt = new Date();
   next();
+});
+
+schema.pre('save', function (next) {
+  'use strict';
+
+  var year, now;
+  now = new Date();
+  year = now.getFullYear().toString();
+  async.waterfall([function (next) {
+    var query;
+    query = this.constructor.find();
+    query.where('academicRegistry').equals(new RegExp(year+'[0-9]*'));
+    query.sort('-academicRegistry');
+    query.limit(1);
+    query.exec(next);
+  }.bind(this), function (users, next) {
+    var user, current;
+    user = users[0];
+    if (!user) {
+      current = 1;
+    } else {
+      current = user.academicRegistry.match(/[0-9]{4}([0-9]{5})[0-9]{1}/)[1] * 1 + 1;
+    }
+    next(null, current.toString());
+  }.bind(this), function (id, next) {
+    var digitChecker = damm.
+    this.academicRegistry = '';//@TODO do your magic fernando
+  }.bind(this)], next);
 });
 
 module.exports = mongoose.model('User', schema);
