@@ -1,4 +1,4 @@
-var VError, mongoose, jsonSelect, nconf, Schema, async, schema;
+var VError, mongoose, jsonSelect, nconf, Schema, async, damm, schema;
 
 VError = require('verror');
 mongoose = require('mongoose');
@@ -131,8 +131,9 @@ schema.pre('save', function (next) {
     }
     next(null, current.toString());
   }.bind(this), function (id, next) {
-    var digitChecker = damm.
-    this.academicRegistry = '';//@TODO do your magic fernando
+    var dammInput = parseInt(year) * 100000 + parseInt(id);
+    damm.generate(dammInput.toString());
+    this.academicRegistry = damm.append(dammInput.toString());
   }.bind(this)], next);
 });
 
