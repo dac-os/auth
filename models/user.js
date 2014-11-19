@@ -131,7 +131,8 @@ schema.pre('save', function (next) {
     }
     next(null, current.toString());
   }.bind(this), function (id, next) {
-    var dammInput = parseInt(year) * 100000 + parseInt(id);
+    var dammInput;
+    dammInput = parseInt(year) * 100000 + parseInt(id);
     damm.generate(dammInput.toString());
     this.academicRegistry = damm.append(dammInput.toString());
   }.bind(this)], next);
