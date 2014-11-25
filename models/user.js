@@ -124,17 +124,14 @@ schema.pre('save', function (next) {
   }.bind(this), function (users, next) {
     var user, current;
     user = users[0];
-    if (!user) {
-      current = 1;
-    } else {
-      current = user.academicRegistry.match(/[0-9]{4}([0-9]{5})[0-9]{1}/)[1] * 1 + 1;
-    }
+    current = !user ? 1 : user.academicRegistry.match(/[0-9]{4}([0-9]{5})[0-9]{1}/)[1] * 1 + 1;
     next(null, current.toString());
   }.bind(this), function (id, next) {
     var dammInput;
     dammInput = parseInt(year) * 100000 + parseInt(id);
     damm.generate(dammInput.toString());
     this.academicRegistry = damm.append(dammInput.toString());
+    next();
   }.bind(this)], next);
 });
 

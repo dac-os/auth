@@ -37,7 +37,6 @@ describe('user controller', function () {
 
     before(function (done) {
       admin = new User({
-        'academicRegistry' : '111111',
         'password'         : '1234',
         'profile'          : changeUserProfile._id
       });
@@ -46,7 +45,6 @@ describe('user controller', function () {
 
     before(function (done) {
       otherUser = new User({
-        'academicRegistry' : '111112',
         'password'         : '1234',
         'profile'          : otherProfile._id
       });
@@ -58,7 +56,6 @@ describe('user controller', function () {
         var request;
         request = supertest(app);
         request = request.post('/users');
-        request.send({'academicRegistry' : '111113'});
         request.send({'password' : '1234'});
         request.send({'profile' : 'other-profile'});
         request.expect(403);
@@ -72,26 +69,9 @@ describe('user controller', function () {
         request = supertest(app);
         request = request.post('/users');
         request.set('csrf-token', auth.token(otherUser));
-        request.send({'academicRegistry' : '111113'});
         request.send({'password' : '1234'});
         request.send({'profile' : 'other-profile'});
         request.expect(403);
-        request.end(done);
-      });
-    });
-
-    describe('without academicRegistry', function () {
-      it('should raise error', function (done) {
-        var request;
-        request = supertest(app);
-        request = request.post('/users');
-        request.set('csrf-token', auth.token(admin));
-        request.send({'password' : '1234'});
-        request.send({'profile' : 'other-profile'});
-        request.expect(400);
-        request.expect(function (response) {
-          response.body.should.have.property('academicRegistry').be.equal('required');
-        });
         request.end(done);
       });
     });
@@ -102,26 +82,9 @@ describe('user controller', function () {
         request = supertest(app);
         request = request.post('/users');
         request.set('csrf-token', auth.token(admin));
-        request.send({'academicRegistry' : '111113'});
         request.send({'profile' : 'other-profile'});
         request.expect(400);
         request.expect(function (response) {
-          response.body.should.have.property('password').be.equal('required');
-        });
-        request.end(done);
-      });
-    });
-
-    describe('without academicRegistry and password', function () {
-      it('should raise error', function (done) {
-        var request;
-        request = supertest(app);
-        request = request.post('/users');
-        request.set('csrf-token', auth.token(admin));
-        request.send({'profile' : 'other-profile'});
-        request.expect(400);
-        request.expect(function (response) {
-          response.body.should.have.property('academicRegistry').be.equal('required');
           response.body.should.have.property('password').be.equal('required');
         });
         request.end(done);
@@ -134,35 +97,9 @@ describe('user controller', function () {
         request = supertest(app);
         request = request.post('/users');
         request.set('csrf-token', auth.token(admin));
-        request.send({'academicRegistry' : '111113'});
         request.send({'password' : '1234'});
         request.send({'profile' : 'other-profile'});
         request.expect(201);
-        request.end(done);
-      });
-    });
-
-    describe('with academicRegistry taken', function () {
-      before(function (done) {
-        var request;
-        request = supertest(app);
-        request = request.post('/users');
-        request.set('csrf-token', auth.token(admin));
-        request.send({'academicRegistry' : '111114'});
-        request.send({'password' : '1234'});
-        request.send({'profile' : 'other-profile'});
-        request.end(done);
-      });
-
-      it('should raise error', function (done) {
-        var request;
-        request = supertest(app);
-        request = request.post('/users');
-        request.set('csrf-token', auth.token(admin));
-        request.send({'academicRegistry' : '111114'});
-        request.send({'password' : '1234'});
-        request.send({'profile' : 'other-profile'});
-        request.expect(409);
         request.end(done);
       });
     });
@@ -173,7 +110,6 @@ describe('user controller', function () {
 
     before(function (done) {
       otherUser = new User({
-        'academicRegistry' : '111112',
         'password'         : '1234',
         'profile'          : otherProfile._id
       });
@@ -198,7 +134,6 @@ describe('user controller', function () {
         request.set('csrf-token', auth.token(otherUser));
         request.expect(200);
         request.expect(function (response) {
-          response.body.should.have.property('academicRegistry').be.equal('111112');
           response.body.should.have.property('profile').with.property('name').be.equal('other profile');
           response.body.should.have.property('profile').with.property('slug').be.equal('other-profile');
         });
@@ -212,7 +147,6 @@ describe('user controller', function () {
 
     before(function (done) {
       admin = new User({
-        'academicRegistry' : '111111',
         'password'         : '1234',
         'profile'          : changeUserProfile._id
       });
@@ -248,7 +182,6 @@ describe('user controller', function () {
 
     before(function (done) {
       admin = new User({
-        'academicRegistry' : '111111',
         'password'         : '1234',
         'profile'          : changeUserProfile._id
       });
@@ -260,7 +193,6 @@ describe('user controller', function () {
       request = supertest(app);
       request = request.post('/users');
       request.set('csrf-token', auth.token(admin));
-      request.send({'academicRegistry' : '111113'});
       request.send({'password' : '1234'});
       request.send({'profile' : 'other-profile'});
       request.expect(201);
@@ -283,7 +215,7 @@ describe('user controller', function () {
         var request;
         request = supertest(app);
         request = request.post('/users/me/session');
-        request.set('authorization', 'Basic ' + new Buffer('111113:').toString('base64'));
+        request.set('authorization', 'Basic ' + new Buffer('2014000029:').toString('base64'));
         request.expect(401);
         request.end(done);
       });
@@ -304,7 +236,7 @@ describe('user controller', function () {
         var request;
         request = supertest(app);
         request = request.post('/users/me/session');
-        request.set('authorization', 'Basic ' + new Buffer('111113:1234').toString('base64'));
+        request.set('authorization', 'Basic ' + new Buffer('2014000029:1234').toString('base64'));
         request.expect(201);
         request.expect(function (response) {
           response.body.should.have.property('token');

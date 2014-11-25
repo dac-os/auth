@@ -50,7 +50,6 @@ router.use(function (request, response, next) {
  * @apiErrorExample
  * HTTP/1.1 400 Bad Request
  * {
- *   "academicRegistry": "required",
  *   "password": "required",
  *   "profile": "required"
  * }
@@ -76,15 +75,14 @@ router
   var user, password;
   password = crypto.createHash('sha1').update(request.param('password') + nconf.get('PASSWORD_SALT')).digest('hex');
   user = new User({
-    'academicRegistry' : request.param('academicRegistry'),
-    'password'         : request.param('password') ? password : null,
-    'profile'          : request.profile ? request.profile._id : null,
-    'name'             : request.param('name'),
-    'gender'           : request.param('gender'),
-    'email'            : request.param('email'),
-    'phones'           : request.param('phones'),
-    'addresses'        : request.param('addresses'),
-    'birthDate'        : request.param('birthDate')
+    'password'  : request.param('password') ? password : null,
+    'profile'   : request.profile ? request.profile._id : null,
+    'name'      : request.param('name'),
+    'gender'    : request.param('gender'),
+    'email'     : request.param('email'),
+    'phones'    : request.param('phones'),
+    'addresses' : request.param('addresses'),
+    'birthDate' : request.param('birthDate')
   });
   async.series([user.save.bind(user), function (done) {
     user.populate('profile');
