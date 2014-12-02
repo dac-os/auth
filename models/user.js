@@ -1,10 +1,11 @@
-var VError, mongoose, jsonSelect, nconf, Schema, async, schema;
+var VError, mongoose, jsonSelect, nconf, Schema, async, damm, schema;
 
 VError = require('verror');
 mongoose = require('mongoose');
 jsonSelect = require('mongoose-json-select');
 nconf = require('nconf');
 async = require('async');
+damm = require('damm');
 Schema = mongoose.Schema;
 
 schema = new Schema({
@@ -14,8 +15,7 @@ schema = new Schema({
   },
   'academicRegistry' : {
     'type'     : String,
-    'unique'   : true,
-    'required' : true
+    'unique'   : true
   },
   'password'         : {
     'type'     : String,
@@ -106,6 +106,33 @@ schema.pre('save', function setUserUpdatedAt(next) {
 
   this.updatedAt = new Date();
   next();
+});
+
+schema.pre('save', function (next) {
+  'use strict';
+
+  var year, now;
+  now = new Date();
+  year = now.getFullYear().toString();
+  async.waterfall([function (next) {
+    var query;
+    query = this.constructor.find();
+    query.where('academicRegistry').equals(new RegExp(year+'[0-9]*'));
+    query.sort('-academicRegistry');
+    query.limit(1);
+    query.exec(next);
+  }.bind(this), function (users, next) {
+    var user, current;
+    user = users[0];
+    current = !user ? 1 : user.academicRegistry.match(/[0-9]{4}([0-9]{5})[0-9]{1}/)[1] * 1 + 1;
+    next(null, current.toString());
+  }.bind(this), function (id, next) {
+    var dammInput;
+    dammInput = parseInt(year) * 100000 + parseInt(id);
+    damm.generate(dammInput.toString());
+    this.academicRegistry = damm.append(dammInput.toString());
+    next();
+  }.bind(this)], next);
 });
 
 module.exports = mongoose.model('User', schema);
