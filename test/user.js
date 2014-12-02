@@ -193,37 +193,7 @@ describe('user controller', function () {
         });
         request.end(done);
       });
-
-      it('should show the user details', function(done) {
-        var request;
-        request = supertest(app);
-        request = request.get('/users/111112');
-        request.expect(200);
-        request.expect(function (response) {
-          response.body.should.have.property('academicRegistry').be.equal('111112');
-          response.body.should.have.property('profile').with.property('name').be.equal('other profile');
-          response.body.should.have.property('profile').with.property('slug').be.equal('other-profile');
-          response.body.should.have.property('name').be.equal('Rafael');
-          response.body.should.have.property('gender').be.equal('Masculino');
-          response.body.should.have.property('email').be.equal('rafael@mailinator.com');
-          response.body.should.have.property('phones').be.instanceOf(Array).with.lengthOf(1);
-          response.body.phones.every(function (phone) {
-            phone.should.be.equal(19998111112);
-          });
-          response.body.should.have.property('addresses').be.instanceOf(Array).with.lengthOf(1)
-          response.body.addresses.every(function (address) {
-            address.should.have.property('state').be.equal('SP');
-            address.should.have.property('city').be.equal('Campinas');
-            address.should.have.property('zipCode').be.equal('11111112');
-            address.should.have.property('street').be.equal('Zeferino Vaz');
-            address.should.have.property('number').be.equal('11');
-          });
-          response.body.should.have.property('birthDate').be.equal(new Date(1980, 0, 1).toISOString());
-        });
-        request.end(done);
-      });
     });
-
   });
 
   describe('update', function () {
