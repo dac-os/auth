@@ -355,6 +355,45 @@ router
   return response.status(200).send(user);
 });
 
+/**
+ * @api {delete} /users/:user Removes user.
+ * @apiName removeUser
+ * @apiVersion 1.0.0
+ * @apiGroup user
+ * @apiPermission changeUser
+ * @apiDescription
+ * This method removes a user from the system. If no user with the requested academic registry was found, a 404 error will be
+ * raised.
+ *
+ * @apiErrorExample
+ * HTTP/1.1 404 Not Found
+ * {}
+ *
+ * @apiErrorExample
+ * HTTP/1.1 403 Forbidden
+ * {}
+ *
+ * @apiSuccessExample
+ * HTTP/1.1 204 No Content
+ * {}
+ */
+router
+.route('/users/:user')
+.delete(auth.can('changeUser'))
+.delete(function removeUser(request, response, next) {
+  'use strict';
+
+  var user;
+  user = request.user;
+  return user.remove(function removedUser(error) {
+    if (error) {
+      error = new VError(error, 'error removing user: "$s"', request.params.user);
+      return next(error);
+    }
+    return response.status(204).end();
+  });
+});
+
 router.param('user', function findUser(request, response, next, id) {
   'use strict';
 
