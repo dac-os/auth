@@ -173,6 +173,7 @@ describe('user controller', function () {
         request = request.get('/users');
         request.expect(200);
         request.expect(function (response) {
+          console.log(response.body)
           response.body.should.be.instanceOf(Array).with.lengthOf(1);
           response.body.every(function (profile) {
             profile.should.have.property('academicRegistry');
@@ -295,6 +296,115 @@ describe('user controller', function () {
         request.expect(function (response) {
           response.body.should.have.property('token');
         });
+        request.end(done);
+      });
+    });
+  });
+
+  describe('delete', function () {
+    before(Profile.remove.bind(Profile));
+    before(User.remove.bind(User));
+
+    before(function (done) {
+      changeUserProfile = new Profile({
+        'slug'        : 'changeuser',
+        'name'        : 'changeUser',
+        'permissions' : ['changeUser']
+      });
+      changeUserProfile.save(done);
+
+    });
+
+    before(function (done) {
+      otherProfile = new Profile({
+        'slug'        : 'other-profile',
+        'name'        : 'other profile',
+        'permissions' : []
+      });
+      otherProfile.save(done);
+    });
+
+    before(function (done) {
+      admin = new User({
+        'password'         : '1234',
+        'profile'          : changeUserProfile._id
+      });
+      admin.save(done);
+      //console.log(admin)
+    });
+
+    before(function (done) {
+      otherUser = new User({
+        'password'         : '1234',
+        'profile'          : otherProfile._id
+      });
+      otherUser.save(done);
+    });
+
+    before(function (done) {
+      var query  = User.where({ _id: admin._id });
+      query.findOne(function (err, user) {
+        admin = user
+        done()
+      });
+    });
+
+    before(function (done) {
+      var query  = User.where({ _id: otherUser._id });
+      query.findOne(function (err, user) {
+        otherUser = user
+        done()
+      });
+    });
+    
+
+    describe('without token', function () {
+      it('should raise error(forbidden)', function (done) {
+        var request;
+        request = supertest(app); 
+        request = request.del('/users/' + admin.academicRegistry);
+        request.expect(403);
+        request.end(done);
+      });
+    });
+
+    describe('without changeUser permission', function () {
+      it('should raise error (forbidden)', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.del('/users/' + admin.academicRegistry);
+        request.set('csrf-token', auth.token(otherUser));
+        request.expect(403);
+        request.end(done);
+      });
+    });
+
+    describe('without valid userCode', function () {
+      it('should raise error', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.del('/users/invalid');
+        request.set('csrf-token', auth.token(admin));
+        request.expect(404);
+        request.end(done);
+      });
+    });
+
+    describe('with valid credentials and token', function () {
+      it('should delete', function (done) {
+        var request;
+        request = supertest(app);
+        request = request.del('/users/' + admin.academicRegistry);
+        request.set('csrf-token', auth.token(admin));
+        request.expect(204);
+        request.end(done);
+      });
+
+      after(function (done) {
+        var request;
+        request = supertest(app);
+        request = request.get('/users/111112');
+        request.expect(404);
         request.end(done);
       });
     });
